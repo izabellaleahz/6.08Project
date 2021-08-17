@@ -1,0 +1,540 @@
+
+<meta charset="utf-8" emacsmode="-*- markdown -*-"> <link rel="stylesheet" href="https://casual-effects.com/markdeep/latest/journal.css?">
+
+                          **Archy - Final Report**
+
+
+# Summary
+The structure consists of three arches made from pool noodles and PVC to create a three-legged structure. Each arch is lined with a strip of LEDs. Every arch also has one ultrasonic distance sensor attached at its peak. 
+Most of the electronics sit at the top of the structure on a small platform. This contains the ESP32, the LCD display, the IMU, and the speaker. The game is controlled by a website we made. 
+We have a home page at http://608dev-2.net/sandbox/sc/team019/home.html. But our main page is http://608dev-2.net/sandbox/sc/team019/arch.py , where users create their game. 
+From here the user can determine the length of the game and what questions they want to be asked. The user can either pick from a premade quiz or make their own quiz. 
+Our website is based on a series of python scripts that return an HTML page. Quiz questions are contained in a database. When making a new quiz, the user can make a quiz name and input multiple-choice questions. 
+From the main page, you can also view a personalized scoreboard that displays all your high scores. We use cookies to allow us to remember users between games. 
+This allows us to make the user-generated playlists and scoreboard personal. 
+
+To start a game after you have turned on your device, you choose the game you want to play on the website and input the game id you are given on the LCD display. 
+Once the game has started, you can track the questions being read by the ESP32 live on the website by clicking on Start. Upon turning on the ESP32, we added the ability to select your Wi-Fi network. 
+If the network asks for a password, the user can tilt the device to type and press a button to select. Once the ESP32 has started up, it polls our website to see if a game is begun. 
+Once a game is begun, the ESP32 gets a question from the server and reads it. This is done by sending the text to a Python script that calls the IBM text-to-speech API and returns a sound file. 
+The sound file is then parsed by the script and returned as an array of tones playable by the ESP32. After the question is read the answer choices are read one by one. After an answer choice is read the corresponding arch lights up. 
+Once all the questions are read, the player can run through one of the arches, triggering the ultrasonic sensors. If the player runs through the right arch, the whole structure flashes green and plays a short tone. 
+If the wrong arch is triggered, the structure flashes red and a different longer tone is played. When a game ends, the score and the longest streak of consecutive correct answers are posted to the website. 
+
+
+<iframe width="853" height="480" src="https://www.youtube.com/embed/91q979mB__w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+# Research and Development
+
+For this project, we targeted young children, ages 3-7. We created varying quizzes for a variety of developmental levels. We referenced questions designed for young children when writing our questions. 
+Next, we tested our quizzes on children of varying ages. We decided that if the three-year-old could answer the question correctly, then the question was “easy”; if the five-year-old could answer, it was “medium”; 
+and if the seven-year-old could answer, it was “hard”. Anything unanswerable by our small test sample was put into the “genius” category. 
+Topics like geography and calendar tended to fall into the genius category, while colors were generally easy and animals medium. 
+
+While testing the full gameplay, it was very interesting to watch the children learn the game. The idea of passing under a hoop to answer a question took some practice to get used to. 
+The exiting of the arches was also a bit confusing. If the correct answer corresponded to one arch then why did exiting out another not answer the question incorrectly? For ages seven and up the concept clicked quickly. 
+For age seven, even a more minimal version of the game was engaging, such as our initial test version of reading off of the screen and clicking buttons to answer via the ESP. 
+On the other hand, our five-year-old tester found it a bit more confusing. From our sample size of one, we found it might be more developmentally appropriate for the multiple choice questions to be limited to simple color questions. 
+That way, the LED colors correspond directly to the answers, and it is easier to remember which arch represents which answer choice. It seems at that age and attention span questions with colors as answers were more engaging. 
+The three-year-old struggled a little more but had lots of fun just matching colors. When each arch was a color and the question was simply “Blue” it was engaging and fun. 
+All three ages engaged with the toy, but in varying degrees at different levels. It was very interesting to observe and could be applied to further develop Archy into a market product that spans multiple age ranges. 
+
+# Physical Model
+
+Materials 
+
+ - 3 10ft ½in PVC + little extra for joining (6 1in pieces)
+ - 6 L joints ½in PVC
+ - 3 T joints ½in PVC for top of arches
+ - 3 couplings ½in PVC for top centerpiece
+ - 6 Pool Noodles 
+ - Spray Paint 
+ - 15ft LED strip 
+ - 3 UltraSonic Sensors 
+ - Speaker and Amp 
+ - Lots of wiring 
+ - Portable Battery 
+ - ESP and base parts 
+ - Power low voltage into wall  
+
+
+
+Building Physical Model: 
+
+We quickly found that pool noodles alone were not sturdy enough to withstand the tough beating that toddlers impose on anything and everything. 
+
+![First Attempt, not very stable](First_attempt.jpg)
+
+Each arch is made of a 10ft half-inch PVC pipe that was heated to melt the plastic enough to bend into arches. The PVC turned out to be a great way to get things sturdy, light, and safe for kids. 
+Then each arch was cut in half to add a T PVC adapter on the top of each arch. This allows the middle piece to fit in and hold the structure together a little better. 
+Next was the bottom, connecting each arch was done using a PVC L adapter with a 1" long piece of PVC binding the two ends of the arches attached to their respective L adapter. 
+
+![Bottom Stablizers](Bottoms.png)
+
+Next were the pool noodles. The point of this project was to create a children's toy, and theres something not-so-friendly about just pain old PVC, so a nice fluffy exterior came in the form of pool noodles (just like Baymax, fluffy and non threatening). 
+
+![Final, more stable](Structually_sound.png)
+
+Needless to say it worked, and it looked very interesting to our target audience as there were three little munchkins sneaking in to touch it constantly. 
+The last piece is the one that holds together the top, and it was made with two acrylic triangles screwed to PVC couplers that have a 1" PVC segment inside, glued only on the centerpiece side. 
+This fits perfectly into each T of the arches holding together the shape, keeping the ESP off the ground, maintaining accessible wiring, and most importantly making it deconstructable. 
+A parent could easily unlock the top piece off of the arches, one of the bottom connects, and fold it into a flatter toy for easier storage. 
+
+![Top, ESP and join connection](Top_view.png)
+
+![Bottom piece breaks apart for compact folding](Tear_aprt.png)
+
+Next came the task of wiring, so we first mapped out everything and measured where sensors would have to be placed to best sense a child, using Izzy's very cooperative test subjects. 
+About 18" off the ground seemed to be a good place to avoid children jumping over it or going too easily underneath it. 
+There were holes drilled through the pool noodles and PVC for stringing LEDs into and across to the next arch, the sensors, and the power. 
+
+![Sensor Placement](Sensors.png)
+
+There was a lot of fishing out wire and forcing some down PVCs. There were four wires per sensor, two on each end of the LED connecting to power and two going up from the start of the LED strip. 
+After all wires were in place, yarn was used to label connecting wires: green for 3.3V, white for GND, blue for Trig, black for Echo, and no label for the LED input pin. 
+After soldering everything together, things were ready to be hooked up the ESP. Picture of Izzy's fantastic cutting helper included (: 
+
+![Labeling all the wires!](Yarning.png)
+
+Connecting to the ESP and Testing Code:
+
+The LEDs are connected to wall power from both the beginning of the strip and the end, to prevent a large voltage drop causing dim lights. 
+The sensors only read accurate values when supplied with 5V, and thanks to the magic of Piazza Izzy learned how to make a voltage divider to allow the ESP to read the Echo pin input from the sensor. 
+The speaker is hooked up via its designated pins and is mounted toward the inside center of the arches onto the acrylic top piece.
+
+The ESP and portable battery charger are connected by velcro to allow the structure to be broken down with ease. The wires match colors so a parent could unwire and rewire the device after folding it into a flatter state. 
+
+![Wires](wires.jpg)
+
+The lights were installed using hot glue as the adhesive did not stick well enough to the porous pool noodles.
+The device was also spray painted black to avoid confusion since the pool noodles were blue and one of the color options in the game is blue.
+
+![Standing - lights installed](finished.jpg)
+
+Next came testing and making sure everything worked!
+
+![Final Product in Testing](Archy_final.png)
+
+Curcuit Diagram 
+
+![Pin Layout](Pins.png)
+
+Power Management:
+
+ESP, sensors, LCD screen, buttons etc. all run off a portable battery charger velcroed to the top of the device. 
+Since the LEDs pull a significant amount of power, they are powered by the wall at 5V from both ends to prevent a voltage drop across the strip. 
+When initially testing the strand, lights got dimmer after a certain index and powering from both ends of the LED fixed that problem, creating uniform brightness. 
+The sensors take in a 5V power source, and echo input comes in at 5V and needs to be reduced to 2.5 by using a 2x voltage drop. 
+Using 470 Ohm resistors, two in parallel and one connected to ground, this power drop was achieved and the sensors read more accurately without crashing the ESP. 
+
+Collapsible Feature:
+
+In order to make this very large interactive toy storable, the PVC was meant to be disconnected and folded into a more compact form. All the wires are color coated, matching connections from the PVC openings to the ESP input. 
+Below are pictures of how it collapses by disconnecting the wires, detaching the top, and unlatching the bottom PVC connected to power. 
+
+![Top off and bottom disconnected](unlatched.png)
+
+![Collapsed Archy](collapsed.png)
+
+![Side view, nice and compact!](sideview.png)
+
+# ESP Code: 
+
+State Machine: 
+
+ ![State Machine Diagram](State-Machine.png)
+
+Archy.ino: Main file. Runs the state machine of the game, calls on other files for functional things, like indexing of lights, pulling speech from text, Wi-Fi start up procedures, and GET and POST requests. 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ ... Global Var ...
+
+
+... WiFi SetUp ...
+char network[] = "";
+char password[100] = "";
+
+... Pre Definied Colors ...
+
+
+uint32_t possible_colors[] = {red, orange, yellow, green, blue, purple, pink, brown, white};
+uint32_t color[] = {};
+
+void settings_check(int ESP_id, char* response) {
+  // Check for POST from Settings.db, if yes set to active, set total time, store player id
+  // Else keep waiting
+}
+
+
+void scoreboard(int total_score, int streak, int num_correct, int num_wrong, int player_id) {
+  // Make a post to the score board
+  do_http_request("608dev-2.net", request_buffer, response, 20, 6000, false);
+}
+
+void Task1code( void * pvParameters ) {
+// Dual Core -- ESP 
+  Serial.print("Task1 running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for (;;) {
+    // if reading play response
+	}
+}
+
+void setup() {
+
+  // Basic Set Up 
+
+  // Set up second thread to run parrall to main loop
+  xTaskCreatePinnedToCore(
+    Task1code,   /* Task function. */
+    "Task1",     /* name of task. */
+    10000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &Task1,      /* Task handle to keep track of created task */
+    0);          /* pin task to core 0 */
+  delay(500);
+
+  // Get ESP ID number to input onto Website
+  strcat(request_buffer, "GET /sandbox/sc/team019/question_generator/id_generator.py?item=id HTTP/1.1\r\n");
+  do_http_request("608dev-2.net", request_buffer, response, 200, 6000, true);
+
+  // Start up WiFi Procedure
+  Startup(); 
+
+
+  // Turn on Lights default
+}
+void loop() {
+  switch (state) {
+    case Rest:
+      // Pull server to see when game starts
+      break;
+    case StartGame:
+      // Get speech for Start and change state
+      state = QuestionGet;
+      break;
+
+    case QuestionGet:
+      // IF game is over - update score board 
+        scoreboard(score, best_streak, score, num_wrong, player_id);
+        state = Rest;
+
+      // Else continue game 
+      } else {
+        next_question(ESP_id, response, player_id);
+        // No Questions Left post score and return to Rest
+        if (active == false) {
+          state = Rest;
+        }
+        } else { // Keep Playing Game! 
+          state = ChoiceDisplay;
+        }
+      }
+      break;
+
+    case ChoiceDisplay:
+      // For each choice for the question
+      for (int i = 0; i < 3; i++) {
+      	// Go through all choices and match with color if the answer is a color
+ 		// No color correlation - randomly generate a color
+      }
+
+      getSpeech(question);
+      for (int i = 0; i < 3; i++) {
+        // Each Answer choice
+        getSpeech(choices[i]);
+        // Turn on one arch at a time to make it clear where each answer is
+      }
+      // Turn on all colors 
+      LED_on(color[0], color[1], color[2]);
+      state = SensorSample;
+
+      break;
+
+    case SensorSample:
+      // Sample the sensors
+      arch_activated = sample();
+
+      if (arch_activated == right_answer) {
+        state = RightArch;
+      } else if (arch_activated != 0) {
+        state = WrongArch;
+      }
+      break;
+
+    case RightArch:
+      // Correct Responce, and update score accordingly 
+      LED_on(green, green, green);
+      score++;
+      current_streak++;
+      state = QuestionGet;
+      break;
+
+    case WrongArch:
+      // Wrong arch response and adjust score accordingly
+      LED_on(red, red, red);
+      num_wrong++;
+      state = QuestionGet;
+  }
+  while (millis() - primary_timer < LOOP_PERIOD);
+  primary_timer = millis();
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Distance.ino: Samples sensors, or in intial ESP-only version uses buttons to spoof triggering the sensors 
+
+Game.ino: Formats the GET request to pull the next question off of the database. Or if there are no questions left , the state of the game is inactive.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void next_question(int ESP_id, char* response, int player_id) {
+  // Formats get request 
+  do_http_request("608dev-2.net", request_buffer, response, 200, 6000, true);
+  if (strcmp(response, "No questions left\n") == 0) {
+    active = false;
+  // ...
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Get.ino: Sends a GET request in the format specified and returns the response. 
+
+Light.ino: Turns on pixels of lights in each arch, takes in the three colors in order and turns on each based on the indexes of cut offs from arch 1 to arch 2 to arch 3. 
+
+Sounds.ino: Formats the GET request to the server which then pulls off the IBM text-to-speech API, also converts into a playable char arr and plays the speech over the speaker
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void getSpeech(char* text) {
+  // Formats Get Request
+  do_http_request("608dev-2.net", request_buffer_, response, OUT_BUFFER_SIZE, RESPONSE_TIMEOUT, true);
+
+  reading = true;
+}
+
+void convert_arr(char* string_array) {
+  // Converts from char arr (get request) - into arr of ints
+}
+
+void play() {
+  pointer = 0;
+  sTime = micros();
+  while (pointer < r) {
+    if ((micros() - sTime) > 150) {
+      dac_output_voltage(DAC_CHANNEL_1, sound[pointer]);
+      pointer ++;
+      sTime = micros();
+    }
+  }
+  dac_output_voltage(DAC_CHANNEL_1, 128);
+}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+WiFi.ino: WiFi startup procedure, from identifying nearby networks to entering your password and saving it for future use. It has a tilt-to-type function and its own state machine. 
+
+State Machine for WiFi.ino:
+
+![StateMachine](StateMachine.png)
+
+
+# Text to Speech: 
+ 
+The ESP32 does a GET request for a sound file from a Python script based on some text it inputs. The Python script makes a request to the IBM Watson text-to-speech API and gets a .wav file. 
+That .wav file is converted into an 8 bit .wav file so we can then use the sound file Python library to turn it into a bit array. 
+In order to reduce the size of the response, we reduce the size of the array by 3 and remove any silence from the beginning and end of the sound file. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def get8bit(text):
+    authenticator = IAMAuthenticator(credentials['apikey'])
+    text_to_speech = TextToSpeechV1(
+        authenticator=authenticator
+    )
+ 
+    text_to_speech.set_service_url(credentials['url'])
+ 
+    with open('text.wav', 'wb') as f:
+        f.write(text_to_speech.synthesize(
+            text,
+            voice='en-US_AllisonVoice',
+            accept='audio/wav'        
+            ).get_result().content)
+ 
+    data, samplerate = soundfile.read('text.wav')
+    soundfile.write('parse.wav', data, samplerate, 'PCM_U8')
+    # return soundfile.available_subtypes()
+ 
+ 
+    with wave.open('parse.wav') as f:
+        params = f.getparams()
+        frames = f.readframes(1000000) # 1 million frames max
+ 
+    arr = []
+    n = 0
+    for i in frames:
+        if n/3 == n//3:
+            arr.append(i)
+        n += 1
+    while (arr[0] == 128 or arr[0] == 127 or arr[0] == 126 or arr[0] == 129):
+        arr.pop(0)
+    while (arr[-1] == 128 or arr[-1] == 127 or arr[-1] == 126 or arr[-1] == 129):
+        arr.pop()
+    return arr
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The array that is returned is then parsed by the ESP32. We initially tried to play the audio using timer interrupts. 
+However, there are problems with running the interrupts while setting our programmable LEDS, causing a core error if enabled and disabled more than once. So instead the sound is played in a while loop with a simple timing loop. 
+We then made it non-blocking by putting this functionality in a second core. This allows the answers to be read quicker because it can do other things while speaking. 
+In the future this can be made more efficient by making a system that gets just enough speech information from the server so that we can continuously get more information as we are talking.
+This way, we don't have as big of a delay waiting for the GET request to complete. 
+
+# HTML Web Interface: 
+
+For the web interface, we have a home page with information about the product along with a demo video. This page will direct you to the page where you can set the settings to start a game. 
+The user selects the duration of their game, the playlist they want to play, and the game ID displayed on their ESP. The list of playlist options includes both the preset playlists and all of the user’s own custom playlists. 
+
+![arch.py](Final_archy.png)
+
+At the bottom of this page is the option to add a new custom playlist or edit existing ones by inputting a list of questions and answers. 
+We made the editing of playlists dynamic so that users can see the current questions while editing. 
+On the server side, we parse the form data, add the questions to our database, and update the game creation page (arch.py) to display the new playlist, making it playable. 
+
+![Add Form populated with a custom playlist](add_form_final_demo.png)
+
+You can view what question and answers are currently being played on the ESP, and after each gameplay you can view your high scores. Clicking on the top right hand corner from the main page takes you to a scoreboard page that shows you all of your past scores including streaks, number correct, and number wrong.
+
+![Live View](live_demo.png)
+
+![Score Board](Score_board_final_demo.png)
+
+The code was formatted as a Python file that has a request handler, supporting database accessing functions, and a make_page() function that returns HTML code. 
+This was the method we used across the webpages to make the final product. Through string formatting the HTML in Python and returning it we were able to customize the HTML content. 
+Also, the request handler in Python allowed us to pass information between files, for example passing in player ID or the playlist name to add_form.py to make edits to a given playlist. 
+
+Cookies and LocalStorage:
+
+When the web pages were first finished, all of the information stored was global and accessible to anyone who went on the page. That meant that everyone's playlists and scores would be mixed in with each other. 
+We decided that some kind of identification method was required to make each individual's experience unique. 
+Cookies were chosen to accomplish this, with each user getting a unique number stored in their browser that identified them to our system. 
+This works by keeping a database of all used ids and sending an unused one when the page is created. 
+To avoid using up a number each time you go to a web page, if a cookie already exists, a message is sent to the server letting it know it can recycle the number. 
+
+In the final implementation, only the main game-creating page interacts directly with cookies. It then passes the information to the rest of the connected pages when navigating to them. 
+Custom questions, custom playlist names, scoreboards, and live game views all have this unique number attached to them. 
+When the form is submitted to start a game, this number is also sent to identify which questions belong to the user. 
+
+Instead of getting playlist names off of the server or storing them all as cookies, a third storage option, LocalStorage, was chosen. 
+When a new playlist is made, its name is stored in the browser's LocalStorage. On first loading the webpage, these playlist names are found, and buttons and links are added accordingly. 
+
+# Databases: 
+
+We used sqlite3 to add, pull, and delete from all of our databases. 
+
+All of the data was organized into three databases:
+	- master
+		- master_table - Stores all questions, including custom ones. For each question, we record its category (which trivia set it's included in), the question’s ID number, the player_id number of the user who created it, the question statement, the correct answer, and two wrong answers. When a game is started, a playlist corresponding to that game is created and populated with questions from this table. These smaller tables are deleted after a game ends.
+		- score_board - Holds all game stats from all users. At the end of each game, the ESP32 posts the game information to this database. On the website, cookies are used so that a user only sees their own stats. Stats for each game include the final score, the longest streak of correct answers, the total number of correct answers, and the total number of wrong answers.
+		- quiz_table_? - After the ESP32 polls the settings table, if an entry matches the ESP game ID all of the questions corresponding to the selected playlist and the user's player_id are added to a temporary game table that has the game ID included in the name. All of the questions left to play in a particular game are stored. When the ESP32 requests a question, a random question is pulled off of this table, deleted, and then returned.
+	- settings
+		- settings - Holds all pending game requests. When a user submits a game they want to play, the details of that request get stored here. The information stored includes the player’s cookie/player_id, the ESP’s game ID, how long the game should run, and the name of the playlist of questions to play. The ESP then polls this database to see if any games have been set up for it play. 
+	- live
+		- live - Holds current active question. When a question is pulled off of the quiz_table_? table, it is also added here. Previous entries are deleted so that only the active question appears. The info stored includes the player_id, the question statement, right answer, and two wrong answers. The live display pulls off of this table to know which question is being played. 
+
+# Further Improvements:
+
+	- Larger variety of preset playlists with more questions
+	- Being able to play questions from multiple playlists in one game
+	- Setting difficulty of game
+	- Eliminating noticeable delay in text-to-speech for more engaging and faster-paced game play
+	- Less wires/more self contained - current setup is finicky and wires would pull out causing the whole game to not work; limited by the ESP and the fact it has to be accessible 
+	- Further testing with a greater sample size and adjusting gameplay and questions to cater to our demographic
+	- More control on the live parent monitor, possibly stopping the game mid-play or fast forwarding/skipping questions
+	- Have the number of questions pop up when hovering over a playlist name
+	- Have a dedicated “ESP mode” for optional use without arches
+	- Create a more compact device that houses all sensors and a more easily readable/accessible screen
+	- Add more security - currently very easy to access and change other information
+	- More robust and adjustable scoreboards - sort by playlist or difficulty, have a world leaderboard, have a more complex system to calculate score
+
+# Weekly Deliverables and Progress: 
+
+Week 1: 
+
+ - Web interface for parent control: HTML parent interface that sends color preferences, duration, and playlist selection to database. ESP pulls from this database to start game. 
+ - Addition of new playlist (added feature maybe for next week)
+
+![Website Demo](HTML-Demo.png)
+
+ - Create Python script for generating quizzes, write code for a randomly generated quiz: Generates quiz sets with answers for the categories. Show quiz questions on ESP screen
+
+![Quiz Mode](https://www.youtube.com/watch?v=zMyn28pG3J0)
+
+ - Audio text-to-speech function: Server side of text-to-speech working in browser 
+
+ ![Text to Speech](https://youtu.be/7ESy-xvZmQw)
+
+ - State machine of program: Spoof sensor inputs as button presses, generate correct responses, and keep track of high score
+
+ ![State Machine](https://youtu.be/Gl_Uhsc7__o)
+
+Week 2: 
+
+ - Parent settings, add customized playlists, HTML and database integration: Video of adding passed in quiz questions and settings into the database, where the ESP can play that custom playlist
+
+![Playlist options](PlaylistSelection.png)
+
+<iframe src="https://drive.google.com/file/d/1kwp5BylOR4ByAOfDGc_mnEiKI6QTjp4p/preview" width="640" height="480"></iframe>
+
+
+ - Text-to-speech, ESP integration, something playing: Video of the ESP taking a text input and outputting speech audio
+
+![text-to-speech](https://youtu.be/IC5CES5Y2nM)
+
+ - ESP code consolidation and WiFi input: Complete gameplay beginning to end. ESP Code from start of searching for WiFi, to quiz mode, spoofing signals with buttons. End-to-end game play on ESP 
+
+![ESP Test](https://youtu.be/WP6YmyKjkt4)
+
+ - High score database and display on website: Visible scoreboard with best score, category, date achieved. Updates with POST request at the end of each game
+
+![Score Board](ScoreBoard.png)
+
+![Score Board](https://youtu.be/bV-cfKU5Hog)
+
+Week 3: 
+
+ - Parent interface improvements: Finish dynamic form where user can edit and delete playlists, add homepage (info about product and demo), and add directions to make it more user-friendly
+
+![Parent intface adding and editing playlists](https://youtu.be/Bo8FrUa5_Ko)
+
+ - Physical model: Rough draft of working gameplay. Responsive sensors, pairing with lights. Correct sensor flashes green LED, incorrect flashes red. 
+
+![Lights Responding to Sensros](https://youtu.be/G9gGvRQAkJI)
+
+ - Parent login/cookies: ESP, settings, playlists, wifi password, and scoreboard connected to a user. Assign/get cookies when loading webpage. Specific user associated with scoreboard and game play setting
+
+Proof of cookies: http://608dev-2.net/sandbox/sc/athena1/608subrepo/cookies.py
+
+![Cookies yum yum](https://youtu.be/KHltoFkvfZI)
+
+![Cookies part 2 yummy](https://youtu.be/dFqq9LZmnVI)
+
+Week 4: 
+
+ - Finish cookies and website bugs: Fully customized user experience. Integrate with add_form and scoreboard. Website only displays individual user's playlists and scores.
+
+ - Finish hardware: Fully functional prototype. Make it prettier and more user-friendly by fixing wiring to make it easy to tear apart and by using matching color labels to make to make it easy to reconstruct
+ 
+ - Finish ESP and text to speech stuff: Fix text-to-speech or find alternative, have working game play with complete ESP code on physical model
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style class="fallback">body{visibility:hidden}</style><script>markdeepOptions={tocStyle:'none'};</script>
+<!-- Markdeep: --><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js?" charset="utf-8"></script>
